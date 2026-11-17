@@ -259,6 +259,7 @@ pfUI:RegisterModule("energytick", function()
     energytick.fsrbar:SetStatusBarColor(GetStringColor(C.appearance.castbar.fsrcolor))
     CreateBackdrop(energytick.fsrbar, default_border)
     CreateBackdropShadow(energytick.fsrbar)
+    pfUI.uf.player.fsrbar = energytick.fsrbar
   end
   energytick.fsrbar:SetTimerDuration(energytick.fsr, Enum.StatusBarInterpolation.Immediate, Enum.StatusBarTimerDirection.RemainingTime)
   energytick.fsrbar:Hide()

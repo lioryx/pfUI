@@ -812,7 +812,95 @@ function pfUI.AddConfigPages(gui, U, CVars, UVars)
     )
   end)
 
+  local function ApplyGlobalBarTexture()
+    local texture = C.appearance.bartexture
+    if not texture or texture == "" or texture == "-1" then return end
+
+    local media = pfUI.media[texture] or texture
+
+    if C.unitframes then
+      for _, cfg in pairs(C.unitframes) do
+        if type(cfg) == "table" then
+          if cfg.bartexture then cfg.bartexture = texture end
+          if cfg.pbartexture then cfg.pbartexture = texture end
+        end
+      end
+      C.unitframes.druidmanatexture = texture
+      C.unitframes.swingtimertexture = texture
+      C.unitframes.raidmarkertexture = texture
+    end
+
+    if C.panel and C.panel.xp then
+      C.panel.xp.texture = texture
+    end
+    if C.tooltip and C.tooltip.statusbar then
+      C.tooltip.statusbar.texture = texture
+    end
+    if C.appearance.castbar then
+      C.appearance.castbar.texture = texture
+    end
+    if C.nameplates then
+      C.nameplates.healthtexture = texture
+    end
+
+    if pfUI.uf and pfUI.uf.frames then
+      for _, fr in ipairs(pfUI.uf.frames) do
+        if fr.UpdateConfig then fr:UpdateConfig() end
+      end
+    end
+    if pfUI.xpbar and pfUI.xpbar.UpdateConfig then
+      pfUI.xpbar:UpdateConfig()
+    end
+    if pfUI.nameplates and pfUI.nameplates.UpdateConfig then
+      pfUI.nameplates:UpdateConfig()
+    end
+
+    if GameTooltipStatusBar then
+      GameTooltipStatusBar:SetStatusBarTexture(media)
+    end
+
+    if pfUI.castbar then
+      local castbars = { "player", "target", "focus" }
+      for _, key in pairs(castbars) do
+        local cb = pfUI.castbar[key]
+        if cb and cb.bar and cb.bar.SetStatusBarTexture then
+          cb.bar:SetStatusBarTexture(media)
+        end
+      end
+    end
+
+    if pfUI.swingtimer then
+      if pfUI.swingtimer.mainhand then pfUI.swingtimer.mainhand:SetStatusBarTexture(media) end
+      if pfUI.swingtimer.offhand then pfUI.swingtimer.offhand:SetStatusBarTexture(media) end
+      if pfUI.swingtimer.ranged and pfUI.swingtimer.ranged.SetStatusBarTexture then
+        pfUI.swingtimer.ranged:SetStatusBarTexture(media)
+      end
+    end
+
+    if pfUI.marktracking and pfUI.marktracking.rows then
+      for _, row in pairs(pfUI.marktracking.rows) do
+        if row.health then row.health:SetStatusBarTexture(media) end
+      end
+    end
+
+    if pfUI.uf and pfUI.uf.player and pfUI.uf.player.fsrbar and pfUI.uf.player.fsrbar.SetStatusBarTexture then
+      pfUI.uf.player.fsrbar:SetStatusBarTexture(media)
+    end
+
+    if DruidManaBar and DruidManaBar.SetStatusBarTexture then
+      DruidManaBar:SetStatusBarTexture(media)
+    end
+  end
+
   gui:AddPage("settings.appearance", T["Settings"], T["Appearance"], function(p)
+    p:Dropdown(T["Global Bar Texture"], C.appearance, "bartexture", function()
+      local values = { "-1:" .. T["Keep Current"] }
+      for _, entry in ipairs(D.uf_bartexture) do
+        table.insert(values, entry)
+      end
+      return values
+    end, ApplyGlobalBarTexture)
+    p:Spacer()
     p:Color(T["Background Color"], C.appearance.border, "background")
     p:Color(T["Border Color"], C.appearance.border, "color")
     p:Color(T["Map Reveal Color"], C.appearance.worldmap, "mapreveal_color", U["mapreveal"])

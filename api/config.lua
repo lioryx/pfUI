@@ -210,6 +210,7 @@ function pfUI:LoadConfig()
   pfUI:UpdateConfig("appearance", "worldmap",    "mapexploration",   "0")
   pfUI:UpdateConfig("appearance", "worldmap",    "groupcircles",     "3")
   pfUI:UpdateConfig("appearance", "worldmap",    "colornames",       "1")
+  pfUI:UpdateConfig("appearance", nil,           "bartexture",       "-1")
 
   pfUI:UpdateConfig("loot",       nil,           "autoresize",       "1")
   pfUI:UpdateConfig("loot",       nil,           "autopickup",       "1")
